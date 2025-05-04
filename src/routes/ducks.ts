@@ -48,7 +48,8 @@ router.get(
       // First check if the user exists
       const user = await User.findById(req.params.userId);
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        res.status(404).json({ message: "User not found" });
+        return;
       }
 
       // If user exists, then find their ducks
