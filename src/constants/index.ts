@@ -1,0 +1,1 @@
+export const CLERK_WEBHOOK = "CLERK_WEBHOOK";
