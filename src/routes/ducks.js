@@ -3,6 +3,7 @@ const router = express.Router();
 const Duck = require("../models/Duck");
 const User = require("../models/User");
 const { validate, duckValidationRules } = require("../middleware/validators");
+const { param } = require("express-validator");
 
 // Create a new duck
 router.post("/", duckValidationRules, validate, async (req, res) => {
