@@ -1,8 +1,12 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IUser extends Document {
-  name: string;
+  first_name: string;
+  last_name?: string;
   email: string;
+  image_url?: string;
+  auth_id: string;
+  provider?: string;
   created_at: Date;
   created_by: string;
 }
@@ -28,6 +32,7 @@ const userSchema: Schema = new mongoose.Schema({
   auth_id: {
     type: String,
     required: true,
+    unique: true,
   },
   provider: {
     type: String,

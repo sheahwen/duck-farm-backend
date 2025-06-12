@@ -5,6 +5,7 @@ import { body, validationResult, ValidationChain } from "express-validator";
 const validate = (req: Request, res: Response, next: NextFunction): void => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    console.error("validation error", JSON.stringify(errors.array()));
     res.status(400).json({ errors: errors.array() });
     return;
   }
@@ -49,8 +50,8 @@ const duckValidationRules: ValidationChain[] = [
     .trim()
     .notEmpty()
     .withMessage("Description is required")
-    .isLength({ min: 10, max: 500 })
-    .withMessage("Description must be between 10 and 500 characters"),
+    .isLength({ min: 2, max: 500 })
+    .withMessage("Description must be between 2 and 500 characters"),
 
   body("created_by")
     .trim()
@@ -59,11 +60,13 @@ const duckValidationRules: ValidationChain[] = [
     .isLength({ min: 2, max: 50 })
     .withMessage("Created by must be between 2 and 50 characters"),
 
-  body("user_id")
+  body("user_id").notEmpty().withMessage("User ID is required"),
+
+  body("image_url")
     .notEmpty()
-    .withMessage("User ID is required")
-    .isMongoId()
-    .withMessage("Invalid user ID format"),
+    .withMessage("Image URL is required")
+    .isURL()
+    .withMessage("Please provide a valid image URL"),
 ];
 
 export { validate, userValidationRules, duckValidationRules };

@@ -53,11 +53,12 @@ router.post(
 
       const savedUser = await user.save();
 
-      console.log(`User ${savedUser.id} created`);
+      console.log(`User ${savedUser._id} created`);
 
       res.send("Webhook received");
       return;
     } catch (error) {
+      console.error("Error creating user:", (error as Error).message);
       res.status(500).json({ message: (error as Error).message });
     }
   }

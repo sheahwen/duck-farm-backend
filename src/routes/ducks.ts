@@ -3,6 +3,7 @@ import { param } from "express-validator";
 import Duck from "../models/Duck";
 import User from "../models/User";
 import { validate, duckValidationRules } from "../middleware/validators";
+import { uploadImageFromUrl } from "../services/storage";
 
 const router: Router = express.Router();
 
@@ -13,16 +14,28 @@ router.post(
   validate,
   async (req: Request, res: Response) => {
     try {
+      const user = await User.findOne({ auth_id: req.body.user_id });
+      if (!user) {
+        console.error("User not found");
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+
+      // Upload image to Google Cloud Storage
+      const uploadedImageUrl = await uploadImageFromUrl(req.body.image_url);
+
       const duck = new Duck({
         name: req.body.name,
         description: req.body.description,
         created_by: req.body.created_by,
-        user_id: req.body.user_id,
+        user_id: user.id,
+        image_url: uploadedImageUrl,
       });
 
       const savedDuck = await duck.save();
       res.status(201).json(savedDuck);
     } catch (error) {
+      console.error("Error creating duck:", error);
       res.status(400).json({ message: (error as Error).message });
     }
   }
