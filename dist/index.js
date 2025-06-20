@@ -67,11 +67,9 @@ app.get("/health", async (_, res) => {
         });
     }
 });
-exports.default = app;
 // Start server
-if (process.env.ENVIRONMENT === "local") {
-    const PORT = parseInt(process.env.PORT || "3000", 10);
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-    });
-}
+const PORT = parseInt(process.env.PORT || "3000", 10);
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
+exports.default = app;
