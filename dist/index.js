@@ -23,11 +23,50 @@ app.use("/api/ducks", ducks_1.default);
 app.get("/", (_, res) => {
     res.send("Hello World");
 });
-// MongoDB Connection
-mongoose_1.default
-    .connect(process.env.MONGODB_URI)
-    .then(() => console.log("Connected to MongoDB"))
-    .catch((error) => console.error("MongoDB connection error:", error));
+const connectDB = async () => {
+    try {
+        const mongoUri = process.env.MONGODB_URI;
+        if (!mongoUri) {
+            console.error("MONGODB_URI is missing");
+            return;
+        }
+        console.log("Attempting to connect to MongoDB...");
+        await mongoose_1.default.connect(mongoUri, {
+            maxPoolSize: 10,
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
+        });
+        console.log("✅ Connected to MongoDB successfully");
+    }
+    catch (error) {
+        console.error("❌ MongoDB connection error:", error);
+    }
+};
+connectDB();
+// Add a health check endpoint to test MongoDB connection
+app.get("/health", async (_, res) => {
+    try {
+        const dbState = mongoose_1.default.connection.readyState;
+        const states = {
+            0: "disconnected",
+            1: "connected",
+            2: "connecting",
+            3: "disconnecting",
+        };
+        res.json({
+            status: "ok",
+            mongodb: states[dbState],
+            timestamp: new Date().toISOString(),
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            status: "error",
+            message: "Health check failed",
+            error: error instanceof Error ? error.message : "Unknown error",
+        });
+    }
+});
 exports.default = app;
 // Start server
 if (process.env.ENVIRONMENT === "local") {

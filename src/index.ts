@@ -26,11 +26,51 @@ app.get("/", (_, res) => {
   res.send("Hello World");
 });
 
-// MongoDB Connection
-mongoose
-  .connect(process.env.MONGODB_URI as string)
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((error: Error) => console.error("MongoDB connection error:", error));
+const connectDB = async () => {
+  try {
+    const mongoUri = process.env.MONGODB_URI;
+    if (!mongoUri) {
+      console.error("MONGODB_URI is missing");
+      return;
+    }
+
+    console.log("Attempting to connect to MongoDB...");
+    await mongoose.connect(mongoUri, {
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+    console.log("✅ Connected to MongoDB successfully");
+  } catch (error) {
+    console.error("❌ MongoDB connection error:", error);
+  }
+};
+connectDB();
+
+// Add a health check endpoint to test MongoDB connection
+app.get("/health", async (_, res) => {
+  try {
+    const dbState = mongoose.connection.readyState;
+    const states = {
+      0: "disconnected",
+      1: "connected",
+      2: "connecting",
+      3: "disconnecting",
+    };
+
+    res.json({
+      status: "ok",
+      mongodb: states[dbState as keyof typeof states],
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: "Health check failed",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
 
 export default app;
 
