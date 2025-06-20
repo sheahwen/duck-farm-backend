@@ -10,10 +10,12 @@ const cors_1 = __importDefault(require("cors"));
 const users_1 = __importDefault(require("./routes/users"));
 const ducks_1 = __importDefault(require("./routes/ducks"));
 const webhooks_1 = __importDefault(require("./routes/webhooks"));
+const logger_1 = require("./middleware/logger");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 // Middleware
 app.use((0, cors_1.default)());
+app.use(logger_1.requestLogger);
 // Skip express.json() for webhooks
 app.use("/api/webhooks", webhooks_1.default);
 app.use(express_1.default.json());

@@ -6,6 +6,7 @@ import cors from "cors";
 import userRoutes from "./routes/users";
 import duckRoutes from "./routes/ducks";
 import webhookRoutes from "./routes/webhooks";
+import { requestLogger } from "./middleware/logger";
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ const app: Express = express();
 
 // Middleware
 app.use(cors());
+app.use(requestLogger);
 
 // Skip express.json() for webhooks
 app.use("/api/webhooks", webhookRoutes);
