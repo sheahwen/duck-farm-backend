@@ -20,6 +20,9 @@ app.use(express_1.default.json());
 // Routes
 app.use("/api/users", users_1.default);
 app.use("/api/ducks", ducks_1.default);
+app.get("/", (_, res) => {
+    res.send("Hello World");
+});
 // MongoDB Connection
 mongoose_1.default
     .connect(process.env.MONGODB_URI)

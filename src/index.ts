@@ -21,6 +21,11 @@ app.use(express.json());
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/ducks", duckRoutes);
+
+app.get("/", (_, res) => {
+  res.send("Hello World");
+});
+
 // MongoDB Connection
 mongoose
   .connect(process.env.MONGODB_URI as string)
