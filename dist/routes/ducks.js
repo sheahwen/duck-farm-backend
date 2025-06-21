@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const express_validator_1 = require("express-validator");
 const Duck_1 = __importDefault(require("../models/Duck"));
 const User_1 = __importDefault(require("../models/User"));
 const validators_1 = require("../middleware/validators");
@@ -48,19 +47,21 @@ router.get("/", async (req, res) => {
     }
 });
 // Get all ducks for a specific user
-router.get("/user/:userId", [(0, express_validator_1.param)("userId").isMongoId().withMessage("Invalid user ID format")], validators_1.validate, async (req, res) => {
+router.get("/user/:userId", async (req, res) => {
     try {
-        // First check if the user exists
-        const user = await User_1.default.findById(req.params.userId);
+        // Find user by Clerk auth_id
+        const user = await User_1.default.findOne({ auth_id: req.params.userId });
         if (!user) {
+            console.error("user not found", req.params.userId);
             res.status(404).json({ message: "User not found" });
             return;
         }
         // If user exists, then find their ducks
-        const ducks = await Duck_1.default.find({ user_id: req.params.userId }).populate("user_id", "name email");
+        const ducks = await Duck_1.default.find({ user_id: user._id }).populate("user_id", "name email");
         res.json(ducks);
     }
     catch (error) {
+        console.error("Error getting ducks:", error);
         res.status(500).json({ message: error.message });
     }
 });

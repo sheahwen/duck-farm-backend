@@ -53,30 +53,27 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 // Get all ducks for a specific user
-router.get(
-  "/user/:userId",
-  [param("userId").isMongoId().withMessage("Invalid user ID format")],
-  validate,
-  async (req: Request, res: Response) => {
-    try {
-      // First check if the user exists
-      const user = await User.findById(req.params.userId);
-      if (!user) {
-        res.status(404).json({ message: "User not found" });
-        return;
-      }
-
-      // If user exists, then find their ducks
-      const ducks = await Duck.find({ user_id: req.params.userId }).populate(
-        "user_id",
-        "name email"
-      );
-
-      res.json(ducks);
-    } catch (error) {
-      res.status(500).json({ message: (error as Error).message });
+router.get("/user/:userId", async (req: Request, res: Response) => {
+  try {
+    // Find user by Clerk auth_id
+    const user = await User.findOne({ auth_id: req.params.userId });
+    if (!user) {
+      console.error("user not found", req.params.userId);
+      res.status(404).json({ message: "User not found" });
+      return;
     }
+
+    // If user exists, then find their ducks
+    const ducks = await Duck.find({ user_id: user._id }).populate(
+      "user_id",
+      "name email"
+    );
+
+    res.json(ducks);
+  } catch (error) {
+    console.error("Error getting ducks:", error);
+    res.status(500).json({ message: (error as Error).message });
   }
-);
+});
 
 export default router;
