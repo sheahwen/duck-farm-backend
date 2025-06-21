@@ -12,15 +12,20 @@ const storage_1 = require("../services/storage");
 const router = express_1.default.Router();
 // Create a new duck
 router.post("/", validators_1.duckValidationRules, validators_1.validate, async (req, res) => {
+    console.log("Creating duck");
     try {
         const user = await User_1.default.findOne({ auth_id: req.body.user_id });
+        console.log("User found", user);
         if (!user) {
+            console.log("User not found");
             console.error("User not found");
             res.status(404).json({ message: "User not found" });
             return;
         }
         // Upload image to Google Cloud Storage
+        console.log("Uploading image to Google Cloud Storage");
         const uploadedImageUrl = await (0, storage_1.uploadImageFromUrl)(req.body.image_url);
+        console.log("Image uploaded to Google Cloud Storage", uploadedImageUrl);
         const duck = new Duck_1.default({
             name: req.body.name,
             description: req.body.description,
@@ -28,6 +33,7 @@ router.post("/", validators_1.duckValidationRules, validators_1.validate, async 
             user_id: user.id,
             image_url: uploadedImageUrl,
         });
+        console.log("duck created", duck);
         const savedDuck = await duck.save();
         res.status(201).json(savedDuck);
     }

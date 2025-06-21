@@ -13,16 +13,21 @@ router.post(
   duckValidationRules,
   validate,
   async (req: Request, res: Response) => {
+    console.log("Creating duck");
     try {
       const user = await User.findOne({ auth_id: req.body.user_id });
+      console.log("User found", user);
       if (!user) {
+        console.log("User not found");
         console.error("User not found");
         res.status(404).json({ message: "User not found" });
         return;
       }
 
       // Upload image to Google Cloud Storage
+      console.log("Uploading image to Google Cloud Storage");
       const uploadedImageUrl = await uploadImageFromUrl(req.body.image_url);
+      console.log("Image uploaded to Google Cloud Storage", uploadedImageUrl);
 
       const duck = new Duck({
         name: req.body.name,
@@ -31,6 +36,7 @@ router.post(
         user_id: user.id,
         image_url: uploadedImageUrl,
       });
+      console.log("duck created", duck);
 
       const savedDuck = await duck.save();
       res.status(201).json(savedDuck);
