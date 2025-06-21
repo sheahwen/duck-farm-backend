@@ -50,7 +50,7 @@ router.post(
 // Get all ducks
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const ducks = await Duck.find().limit(10);
+    const ducks = await Duck.aggregate([{ $sample: { size: 10 } }]);
     res.json(ducks);
   } catch (error) {
     console.error("Error getting ducks:", error);
