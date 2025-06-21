@@ -14,7 +14,7 @@ const logger_1 = require("./middleware/logger");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 // Middleware
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({ origin: "https://duck-farm-nextjs.vercel.app" }));
 app.use(logger_1.requestLogger);
 // Skip express.json() for webhooks
 app.use("/api/webhooks", webhooks_1.default);

@@ -13,7 +13,7 @@ dotenv.config();
 const app: Express = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: "https://duck-farm-nextjs.vercel.app" }));
 app.use(requestLogger);
 
 // Skip express.json() for webhooks
