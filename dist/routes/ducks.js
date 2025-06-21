@@ -57,7 +57,7 @@ router.get("/user/:userId", async (req, res) => {
             return;
         }
         // If user exists, then find their ducks
-        const ducks = await Duck_1.default.find({ user_id: user._id }).populate("user_id", "name email");
+        const ducks = await Duck_1.default.find({ user_id: user._id });
         res.json(ducks);
     }
     catch (error) {
