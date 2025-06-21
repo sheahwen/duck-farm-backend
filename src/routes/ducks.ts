@@ -50,9 +50,10 @@ router.post(
 // Get all ducks
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const ducks = await Duck.find();
+    const ducks = await Duck.find().limit(10);
     res.json(ducks);
   } catch (error) {
+    console.error("Error getting ducks:", error);
     res.status(500).json({ message: (error as Error).message });
   }
 });

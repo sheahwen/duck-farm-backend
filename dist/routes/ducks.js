@@ -45,10 +45,11 @@ router.post("/", validators_1.duckValidationRules, validators_1.validate, async 
 // Get all ducks
 router.get("/", async (req, res) => {
     try {
-        const ducks = await Duck_1.default.find();
+        const ducks = await Duck_1.default.find().limit(10);
         res.json(ducks);
     }
     catch (error) {
+        console.error("Error getting ducks:", error);
         res.status(500).json({ message: error.message });
     }
 });
